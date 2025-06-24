@@ -57,8 +57,7 @@ def main(stdscr):
     next_action = create_slide(stdscr, slides["slides"][0]["title"], slides["slides"][0]["bulletpoints"])
     n = 0 # current slide number
     total_slides = len(slides["slides"])
-    end = False
-    while not end:
+    while True:
         if next_action == "next" and n < total_slides-1:
             n += 1
             next_action = create_slide(stdscr, slides["slides"][n]["title"], slides["slides"][n]["bulletpoints"])
