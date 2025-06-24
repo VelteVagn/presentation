@@ -16,11 +16,20 @@ def create_slide(stdscr, title, text):
     titlewin = curses.newwin(3, width, 1, 0)
     titlewin.addstr(1, title_coor, title.upper())
     titlewin.addstr(2, title_coor, f"{'\u203E'*title_width}")
-    textwin = curses.newwin(height-5, width-indent, 5, indent)
+    textwin = curses.newwin(height-6, width-indent, 5, indent)
     titlewin.bkgd(' ', curses.color_pair(1))
     textwin.bkgd(' ', curses.color_pair(2))
+    text = [f'\u2022 {bulletpoint}' for bulletpoint in text]
+    text = '\n\n'.join(text)
+    text = text.split('\n')
     for row, line in enumerate(text):
-        textwin.addstr(row, 0, line)
+        if line == '':
+            indent = ''
+        elif line[0] == '\u2022':
+            indent = ''
+        else:
+            indent = '  '
+        textwin.addstr(row, 0, f'{indent}{line}')
     textwin.refresh()
     titlewin.refresh()
     while True:
