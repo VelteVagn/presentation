@@ -4,6 +4,14 @@
 import curses
 import yaml
 
+# read configurations:
+with open("config.yaml") as file:
+    configs = yaml.safe_load(file)
+
+bulletpoint = configs["bulletpoint"]
+if len(bulletpoint) != 1:
+    raise ValueError("Bullet point must be single character (see config.yaml)")
+
 def create_slide(stdscr, title, text):
     curses.init_color(10, 639, 835, 1000)
     curses.init_color(11, 850, 940, 1000)
@@ -19,7 +27,7 @@ def create_slide(stdscr, title, text):
     textwin = curses.newwin(height-6, width-indent, 5, indent)
     titlewin.bkgd(' ', curses.color_pair(1))
     textwin.bkgd(' ', curses.color_pair(2))
-    text = [f'\u2022 {bulletpoint}' for bulletpoint in text]
+    text = [f'{bulletpoint} {paragraph}' for paragraph in text]
     text = '\n\n'.join(text)
     text = text.split('\n')
     for row, line in enumerate(text):
