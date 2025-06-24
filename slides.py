@@ -2,6 +2,7 @@
 
 # imports
 import curses
+import yaml
 
 def create_slide(stdscr, title, text):
     curses.init_color(10, 639, 835, 1000)
@@ -49,84 +50,18 @@ def main(stdscr):
 
     stdscr.refresh()
     height, width = stdscr.getmaxyx()
-    content1 = [
-            "",
-            "\u2022 Bachelor i matematikk i Lund",
-            " - Tallteori",
-            " - Algebra",
-            " - Filosofi, historie, informasjonssikkerhet, osv",
-            "",
-            "\u2022 Master i logikk i Göteborg",
-            " - Mengdeteori",
-            " - Modellteori",
-            " - Logisk teori",
-            " - Kryptografi",
-            ]
-    content2 = [
-            "",
-            "\u2022 Programmering (Python)",
-            "",
-            "\u2022 Snekring",
-            "",
-            "\u2022 Kreativ skriving",
-            ]
-    
-    content3 = [
-            "",
-            "\u2022 Lucas–Lehmer:",
-            "",
-            "   Hvis p > 2 er et primtall, så er P = 2^p - 1 primtall hvis og bare hvis",
-            "",
-            "   \u03b5^(2^(p-1)) \u2261 -1 (mod P)",
-            "",
-            "   hvor \u03b5 = 2 + sqrt(3).",
-            "",
-            "\u2022 Generalisert versjon",
-            ]
-    content4 = [
-            "",
-            "\u2022 Problem:",
-            "    Bruker for mye på den lokale matbutikken.",
-            "",
-            "\u2022 Løsning:",
-            "    Notér ned hvert eneste kjøp.",
-            "",
-            "\u2022 Metode:",
-            "   - Scanne alle digitale kvitteringene med KI.",
-            "   - Registrere hvert varekjøp (produkt, mengde, pris).",
-            "   - Dobbeltsjekke at totalpris og mengde stemmer overrens med kvitteringa.",
-            "   - Putte hver nye produkt i en kategori (grønnsaker, meieri, brød, osv).",
-            "   - Registrere alle kjøp i en SQL-tabell.",
-            "",
-            "\u2022 Jo flere produkter som allerede er registrerte, jo fortere går programmet.",
-            "",
-            ]
-    content5 = [
-            "",
-            "\u2022 Linux",
-            "",
-            "\u2022 Network-attached storage",
-            "",
-            "\u2022 Spisebord",
-            "",
-            "\u2022 Battleship",
-            ]
 
-    slide1 = ("Bakgrunn", content1)
-    slide2 = ("Interesser", content2)
-    slide3 = ("Bacheloroppgaven", content3)
-    slide4 = ("Kvitteringsregister", content4)
-    slide5 = ("Neste prosjekt", content5)
+    with open("content.yaml") as file:
+        slides = yaml.safe_load(file)
 
-    slides = (slide1, slide2, slide3, slide4, slide5)
-    next_action = create_slide(stdscr, slide1[0], slide1[1])
+    next_action = create_slide(stdscr, slides["slides"][0]["title"], slides["slides"][0]["bulletpoints"])
     n = 0 # current slide number
-    total_slides = len(slides)
+    total_slides = len(slides["slides"])
     end = False
     while not end:
         if next_action == "next" and n < total_slides-1:
             n += 1
-            next_action = create_slide(stdscr, slides[n][0], slides[n][1])
+            next_action = create_slide(stdscr, slides["slides"][n]["title"], slides["slides"][n]["bulletpoints"])
         elif next_action == "next" and n == total_slides-1:
             n += 1
             next_action = create_slide(stdscr, "Fin", "")
@@ -134,10 +69,10 @@ def main(stdscr):
             break
         elif next_action == "prev" and n <= 0:
             n = 0
-            next_action = create_slide(stdscr, slides[n][0], slides[n][1])
+            next_action = create_slide(stdscr, slides["slides"][n]["title"], slides["slides"][n]["bulletpoints"])
         elif next_action == "prev" and n > 0:
             n -= 1
-            next_action = create_slide(stdscr, slides[n][0], slides[n][1])
+            next_action = create_slide(stdscr, slides["slides"][n]["title"], slides["slides"][n]["bulletpoints"])
 
 
 
