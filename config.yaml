@@ -1,1 +1,8 @@
 bulletpoint: • # default: • (Must be exactly one character long)
+
+# colours in RGB ranging from 0 to 1000
+colours:
+  title_bkgd: [639, 835, 1000] # background colour of the title. Default: [639, 835, 1000]
+  text_bkgd: [850, 940, 1000]  # background colour of the main body. Default: [850, 940, 1000] 
+  title_colr: [0, 0, 502]      # text colour of the title. Default: [0, 0, 502] 
+  text_colr: [0, 0, 502]       # text colour of the main body. Default: [0, 0, 502]  
