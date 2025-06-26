@@ -15,7 +15,7 @@ parser.add_argument("content", help=".yaml file with slide content")
 args = parser.parse_args()
 
 # read configurations:
-with open("config.yaml") as file:
+with open("style/config.yaml") as file:
     configs = yaml.safe_load(file)
 
 # set bulletpoint character. -b flag overwrites config.yaml
