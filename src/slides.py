@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser(
     )
 parser.add_argument("-b", "--bulletpoint", help="Alter bulletpoints")
 parser.add_argument("content", help=".yaml file with slide content")
+parser.add_argument("-n", "--nobulletpoints", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -18,14 +19,15 @@ args = parser.parse_args()
 with open("style/config.yaml") as file:
     configs = yaml.safe_load(file)
 
-# set bulletpoint character. -b flag overwrites config.yaml
-if args.bulletpoint is None:
-    bulletpoint = configs["bulletpoint"]
-else:
-    bulletpoint = args.bulletpoint
-# make sure bulletpoints are of length 1
-if len(bulletpoint) != 1:
-    raise ValueError("Bullet point must be single character (see config.yaml)")
+# set bulletpoint character. -b flag overrides config.yaml
+if not args.nobulletpoints: # -n flag overrides -b flag and config.yaml
+    if args.bulletpoint is None:
+        bulletpoint = configs["bulletpoint"]
+    else:
+        bulletpoint = args.bulletpoint
+    # make sure bulletpoints are of length 1
+    if len(bulletpoint) != 1:
+        raise ValueError("Bullet point must be single character (see config.yaml)")
 
 # set colours from config.yaml:
 t_bg = configs["colours"]["title_bkgd"] # title background colour
@@ -62,7 +64,8 @@ def create_slide(stdscr, title, text):
     textwin.bkgd(' ', curses.color_pair(2))
 
     # add bullet points to paragraphs
-    text = [f'{bulletpoint} {paragraph}' for paragraph in text]
+    if not args.nobulletpoints:
+        text = [f'{bulletpoint} {paragraph}' for paragraph in text]
 
     # split text into lines instead of paragraphs:
 
@@ -73,12 +76,15 @@ def create_slide(stdscr, title, text):
 
     # add all text lines to the window:
     for row, line in enumerate(text):
-        if line == '':
-            indent = ''
-        elif line[0] == '\u2022':
+        if args.nobulletpoints:
             indent = ''
         else:
-            indent = '  ' # indent lines without bullet points to align well
+            if line == '':
+                indent = ''
+            elif line[0] == '\u2022':
+                indent = ''
+            else:
+                indent = '  ' # indent lines without bullet points to align well
         textwin.addstr(row, 0, f'{indent}{line}') # add line to window
 
     # refresh windows
