@@ -1,12 +1,30 @@
 blue:
-  title_bkgd: [639, 835, 1000] # background colour of the title. Default: [639, 835, 1000]
-  text_bkgd: [850, 940, 1000]  # background colour of the main body. Default: [850, 940, 1000] 
-  title_colr: [0, 0, 502]      # text colour of the title. Default: [0, 0, 502] 
-  text_colr: [0, 0, 502]       # text colour of the main body. Default: [0, 0, 502]  
+  title_bkgd: [639, 835, 1000] 
+  text_bkgd: [850, 940, 1000] 
+  title_colr: [0, 0, 502]    
+  text_colr: [0, 0, 502]    
 
 red:
-  title_bkgd: [1000, 310, 424]
-  text_bkgd: [1000, 475, 565]
-  title_colr: [502, 0, 0]
-  text_colr: [502, 0, 0]
+  title_bkgd: [1000, 410, 524]
+  text_bkgd: [1000, 775, 865]
+  title_colr: [650, 0, 0]
+  text_colr: [650, 0, 0]
 
+green:
+  title_bkgd: [0, 765, 188]
+  text_bkgd: [886, 1000, 918]
+  title_colr: [0, 443, 110]
+  text_colr: [0, 443, 110]
+
+black:
+  title_bkgd: [90, 90, 90]
+  text_bkgd: [150, 150, 150]
+  title_colr: [900, 900, 900]
+  text_colr: [900, 900, 900]
+
+yellow:
+  title_bkgd: [1000, 914, 137]
+  text_bkgd: [1000, 984, 796]
+  title_colr: [945, 643, 0]
+  text_colr: [945, 643, 0]
+  

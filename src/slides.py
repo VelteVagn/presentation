@@ -28,6 +28,12 @@ if args.colour:
             colour = "blue"
         case "r" | "red":
             colour = "red"
+        case "g" | "green":
+            colour = "green"
+        case "l" | "black":
+            colour = "black"
+        case "y" | "yellow":
+            colour = "yellow"
         case _:
             raise KeyError("No such colour scheme.")
 
