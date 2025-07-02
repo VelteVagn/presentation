@@ -4,14 +4,16 @@
 import curses
 import yaml
 import argparse
+from collections.abc import Iterable
 
 # parse potential arguments: 
 parser = argparse.ArgumentParser(
         description="Create a text-based presentation."
     )
 parser.add_argument("-b", "--bulletpoint", help="Alter bulletpoints")
-parser.add_argument("content", help=".yaml file with slide content")
 parser.add_argument("-n", "--nobulletpoints", action="store_true", default=False)
+parser.add_argument("-p", "--pages", nargs="+", help="Pages to include")
+parser.add_argument("content", help=".yaml file with slide content")
 
 args = parser.parse_args()
 
@@ -28,6 +30,18 @@ if not args.nobulletpoints: # -n flag overrides -b flag and config.yaml
     # make sure bulletpoints are of length 1
     if len(bulletpoint) != 1:
         raise ValueError("Bullet point must be single character (see config.yaml)")
+
+if not args.pages is None:
+    if isinstance(args.pages, Iterable):
+        try:
+            pages = [int(p) for p in args.pages]
+        except ValueError:
+            raise ValueError("--pages requires integers")
+    else:
+        try:
+            pages = [int(args.pages)]
+        except ValueError:
+            raise ValueError("--pages requires integers")
 
 # set colours from config.yaml:
 t_bg = configs["colours"]["title_bkgd"] # title background colour
@@ -124,6 +138,7 @@ def main(stdscr):
     Out:
         None 
     """
+
     # initialise colours:
     curses.init_color(1, t_bg[0], t_bg[1], t_bg[2])
     curses.init_color(2, b_bg[0], b_bg[1], b_bg[2])
@@ -147,36 +162,41 @@ def main(stdscr):
         slides = yaml.safe_load(file)
 
     total_slides = len(slides["slides"]) # amount of slides
+    
+    try:
+        pages = globals()["pages"]
+    except KeyError:
+        pages = list(range(total_slides))
 
     # navigate between slides:
-    n = 0 # current slide number
+    i = 0 # current index of pages
 
     while True:
         # update slide content:
         try:
-            title = slides["slides"][n]["title"]
-            bulletpoints = slides["slides"][n]["bulletpoints"]
+            title = slides["slides"][pages[i]]["title"]
+            bulletpoints = slides["slides"][pages[i]]["bulletpoints"]
         except IndexError:
-            title = "fin"
+            title = f"{pages}"
             bulletpoints = ""
 
         # create slide and determine next action:
         next_action = create_slide(stdscr, title, bulletpoints)
         
         # if going to next slide and it exists:
-        if next_action == "next" and n < total_slides:
-            n += 1 # increase page number
+        if next_action == "next" and i < len(pages):
+            i += 1 # increase page number
 
         # if going to the previous slide and it doesn't exist:
-        elif next_action == "prev" and n <= 0:
-            n = 0 # let slide number remain at 0
+        elif next_action == "prev" and i <= 0:
+            i = 0 # let slide number remain at 0
 
         # if going to the previous slide and it exists:
-        elif next_action == "prev" and n > 0:
-            n -= 1 # decrease page number
+        elif next_action == "prev" and i > 0:
+            i -= 1 # decrease page number
 
         # if going to the next slide, but it doesn't exist
-        elif next_action == "next" and n >= total_slides:
+        elif next_action == "next" and i >= len(pages):
             break # break the loop, effectively ending the script
 
 
