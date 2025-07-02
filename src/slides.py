@@ -109,6 +109,10 @@ def create_slide(stdscr, title, text):
         elif key == curses.KEY_LEFT:
             return "prev"
 
+        # quit on Q
+        elif key == 81:
+            exit()
+
 
 def main(stdscr):
     """
