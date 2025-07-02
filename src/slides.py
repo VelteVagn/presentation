@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument("-b", "--bulletpoint", help="Alter bulletpoints")
 parser.add_argument("-n", "--nobulletpoints", action="store_true", default=False)
 parser.add_argument("-p", "--pages", nargs="+", help="Pages to include")
+parser.add_argument("-c", "--colour", "--color", help="Choose predefined colour scheme")
 parser.add_argument("content", help=".yaml file with slide content")
 
 args = parser.parse_args()
@@ -20,6 +21,20 @@ args = parser.parse_args()
 # read configurations:
 with open("style/config.yaml") as file:
     configs = yaml.safe_load(file)
+
+if args.colour:
+    match args.colour.lower():
+        case "b" | "blue":
+            colour = "blue"
+        case "r" | "red":
+            colour = "red"
+        case _:
+            raise KeyError("No such colour scheme.")
+
+    with open("style/colour-schemes.yaml") as file:
+        colours = yaml.safe_load(file)[colour]
+else:
+    colours = configs["colours"]
 
 # set bulletpoint character. -b flag overrides config.yaml
 if not args.nobulletpoints: # -n flag overrides -b flag and config.yaml
@@ -44,10 +59,10 @@ if not args.pages is None:
             raise ValueError("--pages requires integers")
 
 # set colours from config.yaml:
-t_bg = configs["colours"]["title_bkgd"] # title background colour
-b_bg = configs["colours"]["text_bkgd"] # main body background colour
-t_txt = configs["colours"]["title_colr"] # title text colour
-b_txt = configs["colours"]["text_colr"] # main body text colour
+t_bg = colours["title_bkgd"] # title background colour
+b_bg = colours["text_bkgd"] # main body background colour
+t_txt = colours["title_colr"] # title text colour
+b_txt = colours["text_colr"] # main body text colour
 
 
 def create_slide(stdscr, title, text):
@@ -163,10 +178,15 @@ def main(stdscr):
 
     total_slides = len(slides["slides"]) # amount of slides
     
+    # set pages
     try:
-        pages = globals()["pages"]
+        pages = globals()["pages"] # get specified page numbers
     except KeyError:
-        pages = list(range(total_slides))
+        pages = list(range(total_slides)) # include all pages otherwise
+    
+    # make sure pages given by -p flag are within bounds
+    if not all(0 <= p < total_slides for p in pages):
+        raise IndexError("page number out of range")
 
     # navigate between slides:
     i = 0 # current index of pages
@@ -177,7 +197,7 @@ def main(stdscr):
             title = slides["slides"][pages[i]]["title"]
             bulletpoints = slides["slides"][pages[i]]["bulletpoints"]
         except IndexError:
-            title = f"{pages}"
+            title = f"fin"
             bulletpoints = ""
 
         # create slide and determine next action:

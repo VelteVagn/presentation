@@ -1,0 +1,12 @@
+blue:
+  title_bkgd: [639, 835, 1000] # background colour of the title. Default: [639, 835, 1000]
+  text_bkgd: [850, 940, 1000]  # background colour of the main body. Default: [850, 940, 1000] 
+  title_colr: [0, 0, 502]      # text colour of the title. Default: [0, 0, 502] 
+  text_colr: [0, 0, 502]       # text colour of the main body. Default: [0, 0, 502]  
+
+red:
+  title_bkgd: [1000, 310, 424]
+  text_bkgd: [1000, 475, 565]
+  title_colr: [502, 0, 0]
+  text_colr: [502, 0, 0]
+
