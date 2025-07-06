@@ -52,6 +52,10 @@ Show a description of the possible flags.
 
 Toggles off bullet points. Paragraphs will still be generated as before, just without the bullet points.
 
+#### `--nofinale`
+
+Toggles off the final slide. 
+
 #### `--notitle`
 
 Toggles off the title screen. If `-p` flag is used, `--notitle` will be overridden.

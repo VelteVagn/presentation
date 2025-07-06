@@ -13,35 +13,44 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument(
         "-b", "--bulletpoint",
-        help="Alter bulletpoints"
+        help="Alter bulletpoints",
     )
 parser.add_argument(
         "-n", "--nobulletpoints",
         action="store_true",
-        default=False
+        default=False,
     )
 parser.add_argument(
         "-p", "--pages", 
         nargs="+", 
-        help="Pages to include"
+        help="Pages to include",
     )
 parser.add_argument(
         "-c", "--colour", "--color",
-        help="Choose predefined colour scheme"
+        help="Choose predefined colour scheme",
     )
 parser.add_argument(
         "--notitle",
         action="store_true",
         default=False,
-        help="Toggle off title slide"
+        help="Toggle off title slide",
+    )
+parser.add_argument(
+        "--nofinale",
+        action="store_true",
+        default=False,
+        help="Toggle off finale empty slide",
     )
 parser.add_argument(
         "content",
-        help=".yaml file with slide content")
+        help=".yaml file with slide content",
+    )
 
 args = parser.parse_args()
 
 notitle = args.notitle
+
+nofinale = args.nofinale
 
 # load the title
 with open(args.content) as file:
@@ -271,9 +280,12 @@ def main(stdscr):
                 title = content["slides"][pages[i]]["title"]
                 bulletpoints = content["slides"][pages[i]]["bulletpoints"]
         except IndexError:
-            # configure end slide
-            title = "fin"
-            bulletpoints = ""
+            if globals()["nofinale"]:
+                break
+            else:
+                # configure end slide
+                title = "fin"
+                bulletpoints = ""
         
         # create the slide and get next action from user input
         next_action = create_slide(stdscr, title, bulletpoints, title_slide)
