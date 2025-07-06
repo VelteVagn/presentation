@@ -6,45 +6,48 @@ import yaml
 import argparse
 from collections.abc import Iterable
 
-# parse arguments: 
-parser = argparse.ArgumentParser(
-        description="Create a text-based presentation."
-    )
+# parse arguments:
+parser = argparse.ArgumentParser(description="Create a text-based presentation.")
 
 parser.add_argument(
-        "-b", "--bulletpoint",
-        help="Alter bulletpoints",
-    )
+    "-b",
+    "--bulletpoint",
+    help="Alter bulletpoints",
+)
 parser.add_argument(
-        "-n", "--nobulletpoints",
-        action="store_true",
-        default=False,
-    )
+    "-n",
+    "--nobulletpoints",
+    action="store_true",
+    default=False,
+)
 parser.add_argument(
-        "-p", "--pages", 
-        nargs="+", 
-        help="Pages to include",
-    )
+    "-p",
+    "--pages",
+    nargs="+",
+    help="Pages to include",
+)
 parser.add_argument(
-        "-c", "--colour", "--color",
-        help="Choose predefined colour scheme",
-    )
+    "-c",
+    "--colour",
+    "--color",
+    help="Choose predefined colour scheme",
+)
 parser.add_argument(
-        "--notitle",
-        action="store_true",
-        default=False,
-        help="Toggle off title slide",
-    )
+    "--notitle",
+    action="store_true",
+    default=False,
+    help="Toggle off title slide",
+)
 parser.add_argument(
-        "--nofinale",
-        action="store_true",
-        default=False,
-        help="Toggle off finale empty slide",
-    )
+    "--nofinale",
+    action="store_true",
+    default=False,
+    help="Toggle off finale empty slide",
+)
 parser.add_argument(
-        "content",
-        help=".yaml file with slide content",
-    )
+    "content",
+    help=".yaml file with slide content",
+)
 
 args = parser.parse_args()
 
@@ -54,10 +57,10 @@ nofinale = args.nofinale
 
 # load the title
 with open(args.content) as file:
-    title = yaml.safe_load(file)['title']
+    title = yaml.safe_load(file)["title"]
 
 # load style
-with open('style/config.yaml') as file:
+with open("style/config.yaml") as file:
     configs = yaml.safe_load(file)
 
 # set colour scheme if -c flag is included
@@ -84,7 +87,7 @@ else:
 
 # set bulletpoint character
 # -b flag overrides config.yaml
-if not args.nobulletpoints: # -n flag overrides -b flag and config.yaml
+if not args.nobulletpoints:  # -n flag overrides -b flag and config.yaml
     if args.bulletpoint is None:
         bulletpoint = configs["bulletpoint"]
     else:
@@ -107,10 +110,10 @@ if not args.pages is None:
             raise ValueError("--pages requires integers")
 
 # set colours:
-t_bg = colours["title_bkgd"] # title background colour
-b_bg = colours["text_bkgd"] # main body background colour
-t_txt = colours["title_colr"] # title text colour
-b_txt = colours["text_colr"] # main body text colour
+t_bg = colours["title_bkgd"]  # title background colour
+b_bg = colours["text_bkgd"]  # main body background colour
+t_txt = colours["title_colr"]  # title text colour
+b_txt = colours["text_colr"]  # main body text colour
 
 
 def create_slide(stdscr, title, text, title_slide=False):
@@ -126,67 +129,58 @@ def create_slide(stdscr, title, text, title_slide=False):
         str: "next" or "prev" depending on user input
     """
     # constants:
-    height, width = stdscr.getmaxyx() # screen height and width
-    indent = 3 # indentation of main text
-    title_width = len(title) # width of the title text
+    height, width = stdscr.getmaxyx()  # screen height and width
+    indent = 3  # indentation of main text
+    title_width = len(title)  # width of the title text
     title_coor = (width - title_width) // 2  # title x-coordinates (centered)
     if title_slide:
-        titlewin = curses.newwin(height // 5, width, (height // 5)*2, 0)  # title banner
+        titlewin = curses.newwin(
+            height // 5, width, (height // 5) * 2, 0
+        )  # title banner
     else:
         titlewin = curses.newwin(3, width, 1, 0)  # title banner
-    textwin = curses.newwin(height-6, width-indent, 5, indent)  # text window
-
+    textwin = curses.newwin(height - 6, width - indent, 5, indent)  # text window
 
     # refresh windows:
     stdscr.clear()
     stdscr.refresh()
 
     # set background colours:
-    titlewin.bkgd(' ', curses.color_pair(1))
-    textwin.bkgd(' ', curses.color_pair(2))
-    stdscr.bkgd(' ', curses.color_pair(2))
-    
+    titlewin.bkgd(" ", curses.color_pair(1))
+    textwin.bkgd(" ", curses.color_pair(2))
+    stdscr.bkgd(" ", curses.color_pair(2))
+
     # add underlined and ALL-CAPS title
     if title_slide:
-        titlewin.addstr(
-                height//10,
-                title_coor,
-                title.upper(),
-                curses.A_UNDERLINE
-            )
+        titlewin.addstr(height // 10, title_coor, title.upper(), curses.A_UNDERLINE)
     else:
-        titlewin.addstr(
-                1,
-                title_coor,
-                title.upper(),
-                curses.A_UNDERLINE
-            )
+        titlewin.addstr(1, title_coor, title.upper(), curses.A_UNDERLINE)
 
     if not title_slide:
         # add bullet points to paragraphs
         if not args.nobulletpoints:
-            text = [f'{bulletpoint} {paragraph}' for paragraph in text]
+            text = [f"{bulletpoint} {paragraph}" for paragraph in text]
 
         # split text into lines instead of paragraphs:
 
         # convert list to string with double linebreak between paragraphs
-        text = '\n\n'.join(text)
+        text = "\n\n".join(text)
         # convert string to list of lines instead of paragraphs
-        text = text.split('\n')
+        text = text.split("\n")
 
         # add all text lines to the window:
         for row, line in enumerate(text):
             if args.nobulletpoints:
-                indent = ''
+                indent = ""
             else:
-                if line == '': 
-                    indent = '' # no indent on empty lines
-                elif line[0] == '\u2022':  
-                    indent = '' # no indent on bullet points
+                if line == "":
+                    indent = ""  # no indent on empty lines
+                elif line[0] == "\u2022":
+                    indent = ""  # no indent on bullet points
                 else:
-                    indent = '  ' # indent lines without bullet points
+                    indent = "  "  # indent lines without bullet points
 
-            textwin.addstr(row, 0, f'{indent}{line}') # add line to window
+            textwin.addstr(row, 0, f"{indent}{line}")  # add line to window
 
     # refresh windows
     textwin.refresh()
@@ -194,7 +188,7 @@ def create_slide(stdscr, title, text, title_slide=False):
     stdscr.refresh()
 
     while True:
-        key = stdscr.getch() # wait for input
+        key = stdscr.getch()  # wait for input
 
         # if input is <enter> or <right>, output "next"
         if key in (curses.KEY_RIGHT, 32, curses.KEY_ENTER, 10, 13):
@@ -217,7 +211,7 @@ def main(stdscr):
         stdscr (curses.window): main curses window
 
     Out:
-        None 
+        None
     """
 
     # initialise colours:
@@ -230,20 +224,20 @@ def main(stdscr):
     curses.init_pair(1, 3, 1)
     curses.init_pair(2, 4, 2)
 
-    stdscr.bkgd(' ', curses.color_pair(2)) # set background colour
+    stdscr.bkgd(" ", curses.color_pair(2))  # set background colour
 
-    curses.curs_set(0) # hide cursor
+    curses.curs_set(0)  # hide cursor
 
-    stdscr.refresh() # initial refresh to start up
+    stdscr.refresh()  # initial refresh to start up
 
-    height, width = stdscr.getmaxyx() # screen height and width
+    height, width = stdscr.getmaxyx()  # screen height and width
 
     # load slide content from content.yaml
     with open(args.content) as file:
         content = yaml.safe_load(file)
 
     # amount of slides
-    l = len(content['slides'])
+    l = len(content["slides"])
 
     # create index lists of page numbers, e.g.:
     # ["t", 1, 2, ..., N] for all N slides including title screen
@@ -252,26 +246,26 @@ def main(stdscr):
     try:
         # check for user specified page numbers
         pages = globals()["pages"]
-        pages = ["t" if p == 0 else p-1 for p in pages] # reindex
-        
+        pages = ["t" if p == 0 else p - 1 for p in pages]  # reindex
+
         # make sure they're within the range
         if not all(0 <= p < l if isinstance(p, int) else True for p in pages):
             raise IndexError("Page numbers out of range")
     except KeyError:
-        # else set all pages and alternatively title 
+        # else set all pages and alternatively title
         pages = list(range(l))
 
         # add title unless explicitly or implicitly stated otherwise
-        if not globals()['notitle'] and globals()['title'] != '':
-            pages = ['t'] + pages 
+        if not globals()["notitle"] and globals()["title"] != "":
+            pages = ["t"] + pages
 
-    i = 0 # begin indexing at 0
+    i = 0  # begin indexing at 0
     while True:
-        title_slide = False # default slides are not title slides
+        title_slide = False  # default slides are not title slides
 
         try:
             if pages[i] == "t":
-                # configure title slide 
+                # configure title slide
                 title = content["title"]
                 bulletpoints = ""
                 title_slide = True
@@ -286,7 +280,7 @@ def main(stdscr):
                 # configure end slide
                 title = "fin"
                 bulletpoints = ""
-        
+
         # create the slide and get next action from user input
         next_action = create_slide(stdscr, title, bulletpoints, title_slide)
 
@@ -302,6 +296,7 @@ def main(stdscr):
                     i = 0
                 else:
                     i -= 1
+
 
 if __name__ == "__main__":
     curses.wrapper(main)
