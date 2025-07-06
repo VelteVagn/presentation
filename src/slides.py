@@ -104,10 +104,6 @@ def create_slide(stdscr, title, text, title_slide=False):
     # refresh windows:
     stdscr.clear()
     stdscr.refresh()
-    #titlewin.clear()
-    #titlewin.refresh()
-    #textwin.clear()
-    #textwin.refresh()
 
     # set background colours:
     titlewin.bkgd(' ', curses.color_pair(1))
@@ -196,65 +192,56 @@ def main(stdscr):
 
     height, width = stdscr.getmaxyx() # screen height and width
 
-    if globals()['notitle'] or globals()['title'] == "":
-        floor = 1 # smallest possible index 
-        i = 1 # current index of pages
-        t = 0 # number of title pages
-    else:
-        floor = 0 # smallest possible index
-        i = 0 # current index of pages
-        t = 1 # number of title pages 
-
     # load slide content from content.yaml
     with open(args.content) as file:
-        slides = yaml.safe_load(file)
-
-    total_slides = len(slides["slides"]) + t # amount of slides
-    
-    # create a list of page indexes
+        content = yaml.safe_load(file)
+    l = len(content['slides'])
     try:
-        pages = globals()["pages"] # get specified page numbers
+        # check for user specified page numbers
+        pages = globals()["pages"]
+        pages = ["t" if p == 0 else p-1 for p in pages] # reindex
+        if not all(0 <= p < l if isinstance(p, int) else True for p in pages):
+            raise IndexError("Page numbers out of range")
     except KeyError:
-        pages = list(range(floor, total_slides)) # include all pages otherwise
-    
-    # make sure pages given by -p flag are within bounds
-    if not all(0 <= p < total_slides for p in pages):
-        raise IndexError("page number out of range")
+        # else set all pages and alternatively title 
+        pages = list(range(l))
+        if not globals()['notitle'] and globals()['title'] != '':
+            pages = ['t'] + pages # add title "index" if appropriate
 
-    # navigate between slides:
+    i = 0 # begin indexing at 0
     while True:
-        # update slide content:
+        title_slide = False # default slides are not title slides
+
         try:
-            title = slides["slides"][pages[i]]["title"]
-            bulletpoints = slides["slides"][pages[i]]["bulletpoints"]
+            if pages[i] == "t":
+                # configure title slide 
+                title = content["title"]
+                bulletpoints = ""
+                title_slide = True
+            else:
+                # configure normal slides
+                title = content["slides"][pages[i]]["title"]
+                bulletpoints = content["slides"][pages[i]]["bulletpoints"]
         except IndexError:
+            # configure end slide
             title = "fin"
             bulletpoints = ""
-
-        if i == 0:
-            title_slide = True
-        else:
-            title_slide = False
-
-        # create slide and determine next action:
-        next_action = create_slide(stdscr, title, bulletpoints, title_slide)
         
-        # if going to next slide and it exists:
-        if next_action == "next" and i + 1 < len(pages) + floor:
-            i += 1 # increase page number
+        # create the slide and get next action from user input
+        next_action = create_slide(stdscr, title, bulletpoints, title_slide)
 
-        # if going to the previous slide and it doesn't exist:
-        elif next_action == "prev" and i <= floor:
-            i = floor # let slide number remain at 0
-
-        # if going to the previous slide and it exists:
-        elif next_action == "prev" and i > floor:
-            i -= 1 # decrease page number
-
-        # if going to the next slide, but it doesn't exist
-        elif next_action == "next" and i + 1 >= len(pages) + floor:
-            break # break the loop, effectively ending the script
-
+        # change index based before next (or previous) slide
+        match next_action:
+            case "next":
+                if i < len(pages):
+                    i += 1
+                else:
+                    break
+            case "prev":
+                if i <= 0:
+                    i = 0
+                else:
+                    i -= 1
 
 if __name__ == "__main__":
     curses.wrapper(main)

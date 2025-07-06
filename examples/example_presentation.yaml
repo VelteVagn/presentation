@@ -1,7 +1,7 @@
-title: Slides
+title: "Slides"
 
 slides:
-  - title: Ttiel 1
+  - title: Title 1
     bulletpoints:
       - |
         sdjisaodjisa jisoa djioas
@@ -16,12 +16,12 @@ slides:
           - Ldsdau4rtfd
           - 31415926
           - pluss sdadsa 
-  - title: jdjdsakksd
+  - title: title 2
     bulletpoints:
       - dsidsaojdsaecsxsa
       - Sndedjiis
       - party poopers
-  - title: asudjasdijoas s
+  - title: title 3
     bulletpoints:
       - |
         Lucas-Lehmer:
@@ -30,7 +30,7 @@ slides:
             ε^(2^(p-1)) ≡ - 1 (mod P)
 
             where ε = 2 + sqrt(3).
-  - title: jajajaja
+  - title: title 4
     bulletpoints:
       - |
         sddsajdsadas
@@ -47,7 +47,7 @@ slides:
          - gdsghsdg tihi
 
       - dhsdhshdhjs hdjsak hdk sak d kjashd Ctrl+Z 
-  - title: dhshdh POPOOPOP
+  - title: title 5
     bulletpoints:
         - hsdajhk
 
