@@ -129,6 +129,63 @@ b_bg = colours["text_bkgd"]  # main body background colour
 t_txt = colours["title_colr"]  # title text colour
 b_txt = colours["text_colr"]  # main body text colour
 
+def auto_indent(text, length):
+    """
+    Given a list of strings and a max length, slice up all strings in the
+    list, so that no string is longer than the max length.
+
+    Args:
+        text (list): list of strings 
+        length (int): max length of allowed strings
+
+    Out:
+        list: list of strings where no string overcedes the max length
+    """
+    
+    def split_line(text, length, index):
+        """
+        Take the string at given index of text. If it is longer than length, 
+        return None. Otherwise, split the string in twine such that the first 
+        part is just short of length (meaning adding the next word would make
+        the first part too long). Return a new list of strings where the two
+        split parts are now at the same index and the following index.
+
+        Args: 
+            text (list): list of strings
+            length (int): max desired length
+            index (int): index of string in text list
+
+        Out:
+            list: new list of strings
+        """
+        if len(text[index]) <= length:
+            return None
+        else:
+            i = 1 # index of next word to potensially add
+            words = text[index].split(' ') # list of words in the string
+            new_line = words[0] # the first part of the line we're slicing
+
+            # safely add one word at a time to the new line:
+            while len(f"{new_line} {words[i]}") <= length:
+                new_line = f"{new_line} {words[i]}"
+                i += 1
+
+            next_line = " ".join(words[i:]) # part 2 of the sliced string
+
+            # return the new list of strings:
+            return text[:index] + [new_line, next_line] + text[index+1:]
+
+    # while some strings are too long, split the relevant lines
+    i = 0
+    while i < len(text):
+        if all(len(t) <= length for t in text[i:]):
+            break
+        new_text = split_line(text, length, i)
+        if new_text is not None:
+            text = new_text
+        i += 1
+
+    return text
 
 def create_slide(stdscr, title, text, title_slide=False):
     """
@@ -181,6 +238,8 @@ def create_slide(stdscr, title, text, title_slide=False):
         text = "\n\n".join(text)
         # convert string to list of lines instead of paragraphs
         text = text.split("\n")
+        # indent all lines that are too long
+        text = auto_indent(text, width - 2*indent)
 
         # add all text lines to the window:
         for row, line in enumerate(text):
