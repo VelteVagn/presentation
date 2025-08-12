@@ -202,7 +202,11 @@ def create_slide(stdscr, title, text, title_slide=False):
     # constants:
     height, width = stdscr.getmaxyx()  # screen height and width
     indent = 3  # indentation of main text
-    title_width = len(title)  # width of the title text
+    try:
+        title_width = len(title)  # width of the title text
+    except TypeError:
+        title_width = 0
+        title = ""
     title_coor = (width - title_width) // 2  # title x-coordinates (centered)
     if title_slide:
         titlewin = curses.newwin(
