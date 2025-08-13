@@ -351,11 +351,11 @@ def main(stdscr):
                 title = content["slides"][pages[i]]["title"]
                 bulletpoints = content["slides"][pages[i]]["bulletpoints"]
         except IndexError:
-            if globals()["nofinale"]:
+            if globals()["nofinale"] or not content["conclusion"]:
                 break
             else:
                 # configure end slide
-                title = "fin"
+                title = content["conclusion"]
                 bulletpoints = ""
 
         # create the slide and get next action from user input

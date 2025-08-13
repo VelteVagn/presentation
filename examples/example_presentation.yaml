@@ -1,4 +1,6 @@
+# Leave either empty to toggle off title or conclusion slide:
 title: "Slides"
+conclusion: "Fin"
 
 slides:
   - title: Title 1
